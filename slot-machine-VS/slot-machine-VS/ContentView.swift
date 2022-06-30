@@ -10,37 +10,71 @@ import SwiftUI
 struct ContentView: View {
     let emodjiArray = ["⭐️", "☀️", "💦", "🍉", "⛄️", "🐳", "🐥", "✂️", "🎁", "☎️"]
     
+    //For TEST WIN
+    //let emodjiArray = ["⭐️", "☀️"]
+    
+    @State var isTimerRunning = false
+    
+    @State var emodjiLabelOne = "🎲"
+    @State var emodjiLabelTwo = "🎲"
+    @State var emodjiLabelThree = "🎲"
+    
+    @State private var showCongratulations = false
+    
+    let timer = Timer
+        .publish(every: 0.2, on: .main, in: .common)
+        .autoconnect()
+        .share()        
+    
     var body: some View {
         HStack {
-            Text(getRandomEmoji())
+            Text(emodjiLabelOne)
                 .padding(20.0)
-            Text(getRandomEmoji())
+                .font(.system(size: 60))
+            Text(emodjiLabelTwo)
                 .padding(20.0)
-            Text(getRandomEmoji())
+                .font(.system(size: 60))
+            Text(emodjiLabelThree)
                 .padding(20.0)
+                .font(.system(size: 60))
         }
+        .padding(.bottom, 100.0)
+        .onReceive(timer) { _ in
+            changeSlotsEmoji()
+        }
+        
         Button(action: {
             playButtonTap()
         }, label: {
-            Text("Play")
-                .padding(5.0)
-                .frame(width: 100.0)
+            Text("Play/Stop")
+                .padding(20.0)
+                .frame(width: 150.0)
         })
-           // .disabled(username.isEmpty || password.isEmpty)
             .foregroundColor(.white)
             .accentColor(.black)
             .background(.mint)
             .cornerRadius(5.0)
-            .padding(.top, 30.0)
+            .padding(.top, 100.0)
+            .alert(isPresented: $showCongratulations, content: { Alert(title: Text("Congratulations"), message: Text("YOU WIN !!!"))
+            })
     }
     
-    private func getRandomEmoji() -> String {
-        emodjiArray.randomElement() ?? "🎲"
+    private func changeSlotsEmoji() {
+        if isTimerRunning {
+            emodjiLabelOne = emodjiArray.randomElement() ?? "🎲"
+            emodjiLabelTwo = emodjiArray.randomElement() ?? "🎲"
+            emodjiLabelThree = emodjiArray.randomElement() ?? "🎲"
+        }
      }
     
     private func playButtonTap() {
-        print("Play button tap")
-     }
+        isTimerRunning.toggle()
+        
+        if !isTimerRunning,
+           emodjiLabelOne == emodjiLabelTwo && emodjiLabelTwo == emodjiLabelThree {
+            showCongratulations.toggle()
+        }
+    }
 }
 
 //struct ContentView_Previews: PreviewProvider {
